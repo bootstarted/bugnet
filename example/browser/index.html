@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>dragnet</title>
+    <script src="./dist/web.js"></script>
+    <script>
+      window.addEventListener('load', function() {
+        console.log('load!');
+        throw new Error('Async!');
+      });
+      Promise.reject(new Error('Some rejection!'));
+      throw new Error('Some error!');
+    </script>
+  </head>
+  <body>
+    Hello world.
+  </body>
+</html>

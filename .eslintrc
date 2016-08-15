@@ -1,0 +1,5 @@
+extends:
+  - metalab
+env:
+  node: true
+  browser: true

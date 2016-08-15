@@ -1,0 +1,9 @@
+{
+  "name": "dragnet-example-web",
+  "version": "0.1.0",
+  "dependencies": {
+    "bugnet": "../../",
+    "webpack": "^1.13.1",
+    "webpack-config-babel": "^0.2.0"
+  }
+}
