@@ -33,6 +33,7 @@ const globals = [
 ];
 
 let _wrappedError = null;
+let _lastError = undefined;
 
 const wrap = (f) => {
   try {
@@ -94,18 +95,17 @@ const handleError = (
 ) => {
   const thing = error || _wrappedError;
   _wrappedError = null;
-  queue.invoke(thing);
-};
 
-window.onerror = (...args) => {
-  handleError(...args);
-  return oldOnError.apply(window, args);
+  if (_lastError !== error) {
+    queue.invoke(thing);
+  }
+
+  _lastError = thing || undefined;
 };
 
 if (typeof window.addEventListener === 'function') {
-  // Use the `addEventListener` in supported browsers.
   window.addEventListener('unhandledrejection', (event) => {
-    // Bluebird provides `reason` in a differnt property on the error object.
+    // Bluebird provides `reason` in a different property on the error object.
     // See: http://bluebirdjs.com/docs/api/error-management-configuration.html
     if (event.detail && event.detail.reason) {
       queue.invoke(event.detail.reason);
@@ -113,14 +113,13 @@ if (typeof window.addEventListener === 'function') {
       queue.invoke(event.reason);
     }
   });
-} else {
-  const oldOnUnhandledRejection = window.onunhandledrejection || noop;
-  window.onunhandledrejection = (...args) => {
-    queue.invoke(args[0]);
-    return oldOnUnhandledRejection.apply(window, args);
-  };
 }
 
 globals.forEach((name) => _extendListenerPrototype(window[name]));
+
+window.onerror = (...args) => {
+  handleError(...args);
+  return oldOnError.apply(window, args);
+};
 
 export default (callback) => queue.addListener(callback);
